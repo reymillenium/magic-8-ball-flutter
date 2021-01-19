@@ -1,3 +1,4 @@
+import 'package:quiver/async.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
 
@@ -11,7 +12,7 @@ class MagicBall extends StatefulWidget {
 }
 
 class _MagicBallState extends State<MagicBall> {
-  int ballValue = 1;
+  int ballImageValue = 1;
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +37,6 @@ class _MagicBallState extends State<MagicBall> {
             ),
           ),
           child: SafeArea(
-            // A container can only have one child:
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -46,8 +46,12 @@ class _MagicBallState extends State<MagicBall> {
                     flex: 3,
                     child: Container(
                       padding: EdgeInsets.all(30),
-                      child: Image(
-                        image: AssetImage('images/ball$ballValue.png'),
+                      child: AnimatedSwitcher(
+                        duration: Duration(milliseconds: 500),
+                        child: Image(
+                          image: AssetImage('images/ball$ballImageValue.png'),
+                          key: ValueKey(ballImageValue),
+                        ),
                       ),
                     ),
                   ),
@@ -55,12 +59,14 @@ class _MagicBallState extends State<MagicBall> {
                   // Button: It changes the magic ball images
                   RaisedButton(
                     onPressed: () {
-                      setRandomBallImage();
+                      _setRandomBallImage();
                     },
                     color: Colors.white,
                     textColor: Colors.blue.shade900,
                     padding: const EdgeInsets.all(15.0),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -70,7 +76,9 @@ class _MagicBallState extends State<MagicBall> {
                         ),
                         Text(
                           'Answer me',
-                          style: TextStyle(fontSize: 20),
+                          style: TextStyle(
+                            fontSize: 20,
+                          ),
                         ),
                         SizedBox(
                           width: 8,
@@ -92,14 +100,22 @@ class _MagicBallState extends State<MagicBall> {
     );
   }
 
+  void _setRandomBallImage() {
+    final countDownTimer = CountdownTimer(Duration(milliseconds: 2500), Duration(milliseconds: 500));
+    countDownTimer.listen((data) {
+      setState(() {
+        ballImageValue = countDownTimer.elapsed.inMilliseconds ~/ 500.0;
+      });
+    }, onDone: () {
+      countDownTimer.cancel();
+      setState(() {
+        ballImageValue = getRandomNumber(1, 5);
+      });
+    });
+  }
+
   int getRandomNumber(int min, max) {
     Random random = new Random();
     return (min + random.nextInt(max - min + 1));
-  }
-
-  void setRandomBallImage() {
-    setState(() {
-      ballValue = getRandomNumber(1, 5);
-    });
   }
 }
