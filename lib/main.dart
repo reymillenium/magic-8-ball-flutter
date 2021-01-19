@@ -1,6 +1,7 @@
 import 'package:quiver/async.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'package:shake/shake.dart';
 
 void main() {
   runApp(MagicBall());
@@ -16,6 +17,14 @@ class _MagicBallState extends State<MagicBall> {
 
   @override
   Widget build(BuildContext context) {
+    // ShakeDetector detector = ShakeDetector.waitForStart(onPhoneShake: () {
+    //   _setRandomBallImage();
+    // });
+    // detector.startListening();
+    // Another way: Using the phone's movement sensor to execute something:
+    ShakeDetector detector = ShakeDetector.autoStart(onPhoneShake: () {
+      _setRandomBallImage();
+    });
     return MaterialApp(
       home: Scaffold(
         backgroundColor: Colors.blue,
